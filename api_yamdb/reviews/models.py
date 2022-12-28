@@ -14,3 +14,11 @@ class Title(models.Model):
     year = models.IntegerField()
     rating = models.IntegerField()
     description = models.TextField()
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE
+    )
+    category = models.OneToOneField(
+        Category,
+        on_delete=models.CASCADE
+    )
