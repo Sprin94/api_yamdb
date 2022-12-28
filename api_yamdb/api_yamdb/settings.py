@@ -20,14 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<<<< Temporary merge branch 1
     'rest_framework_simplejwt',
-=========
     'rest_framework',
     'api',
     'users',
     'reviews'
->>>>>>>>> Temporary merge branch 2
 ]
 
 MIDDLEWARE = [
@@ -129,7 +126,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'PAGE_SIZE': 5
 }
 
 SIMPLE_JWT = {
