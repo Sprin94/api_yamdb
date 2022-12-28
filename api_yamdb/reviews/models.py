@@ -20,6 +20,8 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ['pub_date']
+        constraints = [models.UniqueConstraint(
+            fields=['title', 'author'], name='unic_rev'),]
 
 
 class Comment(models.Model):
