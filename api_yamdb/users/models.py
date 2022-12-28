@@ -53,13 +53,15 @@ class UserManager(BaseUserManager):
         )
         return user
 
-    def create_superuser(self, username, email, password):
+    def create_superuser(self, username, email, password,
+                         role='admin', bio=''):
         """ Создает и возвращает пользователя с привилегиями суперадмина."""
 
-        user = self.create_user(username, email, password)
+        user = self.create_user(username, email, password, role, bio)
         user.is_superuser = True
         user.is_staff = True
-        user.role = User.RoleChoice.ADMIN
+        user.role = role
+        user.bio = bio
         user.save()
 
         return user
@@ -106,3 +108,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    class Meta(AbstractUser.Meta):
+        ordering = ('-id',)
