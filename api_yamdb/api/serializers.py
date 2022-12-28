@@ -16,7 +16,11 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    # genre = serializers.SlugRelatedField(slug_field='genre')
+    genre = serializers.SlugRelatedField(
+        slug_field='genre', 
+        queryset=models.Genre.objects.all(),
+        many=True)
+    
 
     class Meta:
         model = models.Title
