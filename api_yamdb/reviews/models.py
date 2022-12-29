@@ -21,19 +21,18 @@ class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
     rating = models.IntegerField(
-        default=None,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=None
     )
     description = models.TextField()
     genre = models.ForeignKey(
         Genre,
-        null=True,
         blank=True,
+        null=True,
         on_delete=models.SET_NULL
     )
     category = models.OneToOneField(
         Category,
-        null=True,
         blank=True,
+        null=True,
         on_delete=models.SET_NULL
     )
