@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import update_last_login
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.tokens import default_token_generator
 
 User = get_user_model()
 
@@ -40,7 +41,7 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
         self.fields['username'] = serializers.CharField(
             max_length=150,
             validators=(UnicodeUsernameValidator,))
-        self.fields['confirmation_code'] = serializers.CharField(max_length=20)
+        self.fields['confirmation_code'] = serializers.CharField(max_length=50)
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -56,7 +57,7 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError(
                 'Аккаунт заблокирован'
             )
-        if self.user.confirmation_code == confirmation_code:
+        if default_token_generator.check_token(self.user, confirmation_code):
             refresh = self.get_token(self.user)
             token = refresh.access_token
             update_last_login(None, self.user)
