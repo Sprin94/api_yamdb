@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import User
 
 
@@ -21,10 +22,6 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    # rating = models.IntegerField(
-    #     null=True,
-    #     blank=True
-    # )
     description = models.TextField()
     genre = models.ManyToManyField(
         Genre,
