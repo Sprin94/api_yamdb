@@ -10,7 +10,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return False
+        return obj.author == request.user
 
 
 class IsAdmin(permissions.BasePermission):
