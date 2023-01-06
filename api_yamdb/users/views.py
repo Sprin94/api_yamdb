@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
 
 from .serializers import TokenObtainSerializer, UserRegistrationSerializer
 
@@ -40,6 +42,15 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        if User.objects.filter(**serializer.data):
+        user = User.objects.filter(**serializer.data).last()
+        if user:
+            code = default_token_generator.make_token(user)
+            send_mail(
+                'Код для получения токена',
+                f'Код для получения JWT токена: {code}',
+                'yamdb@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

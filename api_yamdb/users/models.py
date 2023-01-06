@@ -1,15 +1,9 @@
-import uuid
-
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
-
-
-def generate_uuid(max_length=12) -> str:
-    """Генерирует UUID"""
-    return uuid.uuid4().hex[:max_length]
 
 
 def username_not_me(username):
@@ -33,14 +27,13 @@ class UserManager(BaseUserManager):
             username=username,
             email=self.normalize_email(email),)
 
-        code = generate_uuid()
+        code = default_token_generator.make_token(user)
         if password is None:
             password = code
 
         user.set_password(password)
         user.is_superuser = False
         user.is_staff = False
-        user.confirmation_code = code
         user.role = role
         user.bio = bio
         user.save()
@@ -80,12 +73,6 @@ class User(AbstractUser):
         unique=True,
         max_length=254,
 
-    )
-    confirmation_code = models.CharField(
-        verbose_name='Код подтверждения',
-        max_length=50,
-        unique=True,
-        null=True,
     )
     bio = models.TextField(
         verbose_name='Био',
