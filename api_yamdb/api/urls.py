@@ -1,11 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
-from .views import CategoryViewSet, GenreViewSet, TitleViewSet
 
-
+from .views import CategoryViewSet, GenreViewSet, TitleViewSet, UserViewSet
 from users.views import TokenObtainView, UserRegistrationView
-
-from .views import UserViewSet, ProfileUserView
 
 router_v1 = SimpleRouter()
 
@@ -27,7 +24,6 @@ auth_patterns = [
 ]
 
 urlpatterns = [
-    path('v1/users/me/', ProfileUserView.as_view()),
     path('v1/', include(router_v1.urls)),
     path('v1/auth/', include(auth_patterns))
 ]
