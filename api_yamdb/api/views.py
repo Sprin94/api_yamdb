@@ -1,15 +1,14 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, filters, mixins
+from rest_framework import viewsets, filters, mixins, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import filters
 from rest_framework.decorators import action
 
-from .permission import AuthorModeratorAdminOrReadOnly, IsAdmin, IsAdminOrReadOnly
+from .permission import (AuthorModeratorAdminOrReadOnly, IsAdmin,
+                         IsAdminOrReadOnly)
 from .serializers import (CommentSerializer, ReviewSerializer,
                           CategorySerializer, GenreSerializer, TitleSerializer)
 from users.serializers import UserSerializer
@@ -48,7 +47,6 @@ class UserViewSet(ModelViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
-      
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -76,6 +74,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
+
 
 class CategoryViewSet(
     mixins.CreateModelMixin,

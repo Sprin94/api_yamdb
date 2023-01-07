@@ -1,11 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from users.models import User
+
+
+User = get_user_model()
 
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, verbose_name='Название',
+        'Title',
+        on_delete=models.CASCADE,
+        verbose_name='Название',
         related_name='reviews')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews',
@@ -16,13 +20,12 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True, db_index=True)
 
-
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ['pub_date']
         constraints = [models.UniqueConstraint(
-            fields=['title', 'author'], name='unic_rev'),]
+            fields=['title', 'author'], name='unic_rev'), ]
 
 
 class Comment(models.Model):
