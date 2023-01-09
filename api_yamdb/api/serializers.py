@@ -1,33 +1,51 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.db.models import Avg
+from django.contrib.auth import get_user_model
 
 from reviews.models import Comment, Review, Title, Genre, Category, Title
+from .utils import TitleDefault, ReviewDefault
+
+User = get_user_model()
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    title = serializers.SlugRelatedField(
-        read_only=True, slug_field='name')
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username')
+        slug_field='username',
+        queryset=User.objects.all(),
+        default=serializers.CurrentUserDefault(),
+    )
+    review = serializers.PrimaryKeyRelatedField(
+        queryset=Title.objects.all(),
+        default=ReviewDefault(),
+        write_only=True,
+    )
 
     class Meta:
-        fields = '__all__'
         model = Comment
+        fields = ('id', 'text', 'author', 'pub_date', 'review')
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username')
+        slug_field='username',
+        queryset=User.objects.all(),
+        default=serializers.CurrentUserDefault(),
+    )
+    title = serializers.PrimaryKeyRelatedField(
+        queryset=Title.objects.all(),
+        default=TitleDefault(),
+        write_only=True,
+    )
 
     class Meta:
-        fields = '__all__'
         model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date', 'title')
         validators = [
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
                 fields=['title', 'author'],
-                message='Нельзя добавить больше одного'
+                message='Нельзя добавить больше одного '
                         'отзыва на произведение')]
 
 
@@ -63,4 +81,9 @@ class TitleSerializer(serializers.ModelSerializer):
                   'category')
 
     def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score'))
+        return obj.reviews.aggregate(Avg('score')).get('score__avg')
+
+
+class TitleGetSerializer(TitleSerializer):
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()

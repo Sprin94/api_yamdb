@@ -34,13 +34,13 @@ class Comment(models.Model):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()
-    created = models.DateTimeField(
+    pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['created']
+        ordering = ['pub_date']
 
 
 class Category(models.Model):
@@ -71,6 +71,9 @@ class Title(models.Model):
         Category,
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        ordering = ('-id',)
 
 
 class GenreTitle(models.Model):

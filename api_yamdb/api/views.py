@@ -2,22 +2,22 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, filters, mixins, status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from django_filters.rest_framework import DjangoFilterBackend
 from .permission import (AuthorModeratorAdminOrReadOnly, IsAdmin,
                          IsAdminOrReadOnly)
 from .serializers import (CommentSerializer, ReviewSerializer,
-                          CategorySerializer, GenreSerializer, TitleSerializer)
+                          CategorySerializer, GenreSerializer, TitleSerializer,
+                          TitleGetSerializer)
 from users.serializers import UserSerializer
 from reviews.models import Review, Title, Category, Genre, Title
 
 User = get_user_model()
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = 'username'
@@ -57,11 +57,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         return review.comments.all()
 
-    def perform_create(self, serializer):
-        title = self.kwargs.get('title_id')
-        review = self.kwargs.get('review_id')
-        serializer.save(author=self.request.user, id=review, title=title)
-
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -70,10 +65,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return title.reviews.all()
-
-    def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        serializer.save(author=self.request.user, title=title)
 
 
 class CategoryViewSet(
@@ -108,6 +99,13 @@ class GenreViewSet(
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('genre__slug',)
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TitleGetSerializer
+        else:
+            return TitleSerializer
