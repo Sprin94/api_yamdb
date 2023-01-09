@@ -11,8 +11,10 @@ from .permission import (AuthorModeratorAdminOrReadOnly, IsAdmin,
 from .serializers import (CommentSerializer, ReviewSerializer,
                           CategorySerializer, GenreSerializer, TitleSerializer,
                           TitleGetSerializer)
+
 from users.serializers import UserSerializer
 from reviews.models import Review, Title, Category, Genre, Title
+from .filterset import TitleFilter
 
 User = get_user_model()
 
@@ -102,7 +104,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('genre__slug',)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
