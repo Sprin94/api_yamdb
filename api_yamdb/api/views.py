@@ -15,6 +15,7 @@ from .serializers import (CommentSerializer, ReviewSerializer,
 from users.serializers import UserSerializer
 from reviews.models import Review, Title, Category, Genre, Title
 from .filterset import TitleFilter
+from api.viewclasses import BaseMixinViewClass
 
 User = get_user_model()
 
@@ -69,34 +70,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return title.reviews.all()
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class CategoryViewSet(BaseMixinViewClass):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    pagination_class = PageNumberPagination
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class GenreViewSet(BaseMixinViewClass):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    pagination_class = PageNumberPagination
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -109,5 +90,5 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return TitleGetSerializer
-        else:
-            return TitleSerializer
+
+        return TitleSerializer
