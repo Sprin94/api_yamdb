@@ -6,6 +6,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.views import TokenObtainSlidingView
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from rest_framework.views import APIView
+
 from api.permission import (AuthorModeratorAdminOrReadOnly, IsAdmin,
                             IsAdminOrReadOnly)
 from api.serializers import (CommentSerializer, ReviewSerializer,
@@ -13,13 +18,8 @@ from api.serializers import (CommentSerializer, ReviewSerializer,
                              TitleSerializer, TitleGetSerializer,
                              UserSerializer, TokenObtainSerializer,
                              UserRegistrationSerializer)
-from rest_framework_simplejwt.views import TokenObtainSlidingView
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from rest_framework.views import APIView
-
-
 from reviews.models import Review, Title, Category, Genre, Title
+from api.viewclasses import BaseMixinViewClass
 from api.filterset import TitleFilter
 
 User = get_user_model()
@@ -87,34 +87,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class CategoryViewSet(BaseMixinViewClass):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    pagination_class = PageNumberPagination
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('=name',)
-    lookup_field = 'slug'
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class GenreViewSet(BaseMixinViewClass):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    pagination_class = PageNumberPagination
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('=name',)
-    lookup_field = 'slug'
+
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -171,3 +152,4 @@ class UserRegistrationView(APIView):
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
