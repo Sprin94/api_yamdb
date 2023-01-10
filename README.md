@@ -17,6 +17,11 @@ Python==3.7, Django==3.2, DRF==3.12.4, JWT
 py -3.7 -m venv venv
 source venv/Scripts/activate
 ```
+Для Linux/macOS команда:
+```
+python3 -m venv venv
+source venv/bin/activate
+```
 - Установите зависимости из файла requirements.txt
 ```
 pip install -r requirements.txt
@@ -30,3 +35,8 @@ python3 manage.py runserver
 ```
 http://127.0.0.1:8000/redoc/
 ```
+
+### Авторы
+- github.com/Sprin94
+- github.com/Yana-VV
+- github.com/Frizzz17
