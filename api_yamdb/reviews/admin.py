@@ -24,7 +24,14 @@ class GenreAdmin(admin.ModelAdmin):
 
 
 class TitleAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'year', 'pub_date', 'description', 'genre', 'category')
+    list_display = (
+        'pk',
+        'year',
+        'pub_date',
+        'description',
+        'genre',
+        'category'
+    )
     empty_value_display = '-пусто-'
 
 

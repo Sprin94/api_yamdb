@@ -109,7 +109,6 @@ class GenreViewSet(BaseMixinViewClass):
     lookup_field = 'slug'
 
 
-
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     pagination_class = PageNumberPagination
