@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, filters, mixins, status
+from rest_framework import viewsets, filters, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
@@ -91,10 +91,22 @@ class CategoryViewSet(BaseMixinViewClass):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=name',)
+    lookup_field = 'slug'
+
 
 class GenreViewSet(BaseMixinViewClass):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=name',)
+    lookup_field = 'slug'
 
 
 
